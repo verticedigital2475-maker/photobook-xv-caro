@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Muestra de Photobook · Caro Mis XV</title>
   <!-- Librería Page-Flip -->
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
@@ -13,60 +13,74 @@
       margin: 0;
       padding: 0;
     }
-    body {
+    
+    /* BLOQUEO TOTAL AL TAMAÑO VISIBLE REAL DEL CELULAR */
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh; /* Altura dinámica real en navegadores móviles */
+      position: fixed; /* Evita que el navegador desplace la pantalla fuera de rango */
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
       background: radial-gradient(circle at center, #26272b 0%, #111215 100%);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      min-height: 100vh;
-      height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      overflow: hidden;
       color: #fff;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* HEADER */
+    /* HEADER SUPERIOR (ALTURA EXACTA, SIEMPRE VISIBLE) */
     header {
       width: 100%;
-      padding: 10px 20px;
+      height: 54px;
+      min-height: 54px;
+      max-height: 54px;
+      padding: 0 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(18, 19, 22, 0.75);
+      background: rgba(18, 19, 22, 0.85);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 50;
-      flex-shrink: 0;
+      flex-shrink: 0; /* Prohibido que se reduzca o se corte */
     }
     .header-info {
       display: flex;
       flex-direction: column;
+      justify-content: center;
     }
     .brand-title {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 600;
       letter-spacing: 0.5px;
       color: #f5f5f7;
+      line-height: 1.2;
     }
     .brand-subtitle {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #9aa0a6;
+      line-height: 1.2;
     }
 
     /* HERRAMIENTAS SUPERIORES */
     .top-toolbar {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .tool-btn {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #e4e7eb;
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -81,20 +95,20 @@
       border-color: #38bdf8;
     }
     .tool-btn svg {
-      width: 19px;
-      height: 19px;
+      width: 18px;
+      height: 18px;
       fill: currentColor;
     }
     .zoom-level-badge {
       position: absolute;
-      top: -4px;
-      right: -4px;
+      top: -3px;
+      right: -3px;
       background: #38bdf8;
       color: #0f172a;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-weight: 800;
       border-radius: 10px;
-      padding: 2px 5px;
+      padding: 1px 5px;
       display: none;
     }
 
@@ -107,9 +121,9 @@
       background: rgba(15, 23, 42, 0.95);
       border: 1.5px solid #38bdf8;
       color: #ffffff;
-      padding: 8px 20px;
+      padding: 8px 18px;
       border-radius: 28px;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 600;
       z-index: 80;
       opacity: 0;
@@ -118,7 +132,7 @@
       text-align: center;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(56, 189, 248, 0.25);
       cursor: pointer;
     }
@@ -130,14 +144,15 @@
     #zoom-hint .close-tag {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 12px;
-      padding: 2px 8px;
-      font-size: 0.72rem;
-      margin-left: 6px;
+      padding: 2px 7px;
+      font-size: 0.7rem;
+      margin-left: 4px;
     }
 
     /* ÁREA PRINCIPAL */
     .book-wrapper {
       flex: 1;
+      min-height: 0; /* Permite que el flex se ajuste automáticamente sin desbordar */
       width: 100%;
       display: flex;
       align-items: center;
@@ -148,7 +163,7 @@
       touch-action: none;
     }
 
-    /* ENVOLTORIO ANIMADO PARA DESPLAZAMIENTO ESTILO HEYZINE */
+    /* ENVOLTORIO ANIMADO PARA DESPLAZAMIENTO CENTRADO */
     #flipbook-container {
       display: flex;
       align-items: center;
@@ -182,7 +197,7 @@
       -webkit-user-drag: none;
     }
 
-    /* LOGOTIPO VERTICAL (LIMPIO, SIN "CORREGIDORA") */
+    /* LOGOTIPO EN COMPUTADORA (LATERAL IZQUIERDO) */
     #brand-badge {
       position: absolute;
       left: 18%;
@@ -225,27 +240,9 @@
 
     /* RESPONSIVE: CELULAR Y TABLETA EN VERTICAL */
     @media (max-width: 900px) and (orientation: portrait) {
-      header {
-        padding: 8px 14px;
-      }
-      .brand-title {
-        font-size: 0.88rem;
-      }
-      .brand-subtitle {
-        font-size: 0.7rem;
-      }
-      .tool-btn {
-        width: 34px;
-        height: 34px;
-      }
-      .tool-btn svg {
-        width: 17px;
-        height: 17px;
-      }
-
       #brand-badge {
         left: 50%;
-        top: 20px;
+        top: 25px; /* Separado limpiamente de la barra superior */
         transform: translateX(-50%);
         gap: 6px;
         z-index: 15;
@@ -254,36 +251,31 @@
         transform: translateX(-50%);
       }
       #brand-badge img {
-        height: 75px !important;    /* Tamaño equilibrado que deja visible el menú */
-        width: 75px !important;
+        height: 65px !important; /* Proporción balanceada */
+        width: 65px !important;
       }
       .brand-text .sub {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
         letter-spacing: 1.5px;
       }
+      
+      /* Leve margen al contenedor del libro para dejar respirar el logo arriba */
+      #flipbook-container {
+        margin-top: 35px;
+      }
+
       .nav-arrow {
         display: none;
       }
       #zoom-hint {
-        width: 92%;
-        font-size: 0.8rem;
-        padding: 8px 12px;
+        width: 90%;
+        font-size: 0.78rem;
+        padding: 7px 12px;
         top: 115px;
       }
     }
 
-    /* TABLETA EN VERTICAL */
-    @media (min-width: 600px) and (max-width: 1024px) and (orientation: portrait) {
-      #brand-badge img {
-        height: 100px !important;
-        width: 100px !important;
-      }
-      .brand-text .sub {
-        font-size: 1rem;
-      }
-    }
-
-    /* HORIZONTAL EN CELULAR */
+    /* CELULAR EN HORIZONTAL */
     @media (max-width: 900px) and (orientation: landscape) {
       #brand-badge {
         display: none !important;
@@ -293,7 +285,7 @@
       }
     }
 
-    /* FLECHAS FLOTANTES */
+    /* FLECHAS FLOTANTES (PC) */
     .nav-arrow {
       position: absolute;
       top: 50%;
@@ -325,30 +317,30 @@
       fill: currentColor;
     }
 
-    /* FOOTER */
+    /* FOOTER INFERIOR (COMPACTO Y SIEMPRE VISIBLE) */
     footer {
       width: 100%;
-      padding: 8px 16px 12px;
-      background: rgba(18, 19, 22, 0.7);
+      padding: 6px 14px 10px;
+      background: rgba(18, 19, 22, 0.85);
       backdrop-filter: blur(12px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       z-index: 50;
-      flex-shrink: 0;
+      flex-shrink: 0; /* Prohibido que se reduzca o se desborde */
     }
     .progress-bar-container {
       width: 100%;
-      max-width: 480px;
+      max-width: 450px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .slider-track {
       flex: 1;
-      height: 5px;
+      height: 4px;
       background: rgba(255, 255, 255, 0.15);
       border-radius: 4px;
       position: relative;
@@ -365,12 +357,13 @@
       transition: width 0.3s ease;
     }
     .page-counter {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #cbd5e1;
       font-weight: 500;
-      min-width: 100px;
+      min-width: 90px;
       text-align: center;
     }
+
     .bottom-actions {
       display: flex;
       align-items: center;
@@ -379,10 +372,10 @@
     .action-btn {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 6px 15px;
+      gap: 6px;
+      padding: 6px 14px;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
@@ -400,8 +393,8 @@
       box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
     }
     .action-btn svg {
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
       fill: currentColor;
     }
 
@@ -411,9 +404,9 @@
       background: rgba(30, 41, 59, 0.95);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
-      padding: 7px 16px;
+      padding: 6px 14px;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       z-index: 100;
       opacity: 0;
       transform: translateY(-10px);
@@ -471,7 +464,7 @@
       <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
     </button>
 
-    <!-- LOGOTIPO LIMPIO -->
+    <!-- LOGOTIPO LIMPIO (SOLO "FOTO Y VIDEO") -->
     <a id="brand-badge" href="https://wa.me/524424249172" target="_blank" title="Contactar por WhatsApp">
       <img src="logo.png" alt="Logo" onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.src='logo.jpg';} else if(this.dataset.tried==='1'){this.dataset.tried='2'; this.src='logo.jpeg';}">
       <div class="brand-text">
@@ -479,7 +472,7 @@
       </div>
     </a>
 
-    <!-- ENVOLTORIO CON TRANSICIÓN DINÁMICA DE ENCUADRE -->
+    <!-- ENVOLTORIO ANIMADO CON CENTRADO DE PORTADA -->
     <div id="flipbook-container">
       <div id="flipbook"></div>
     </div>
@@ -489,7 +482,7 @@
     </button>
   </div>
 
-  <!-- BARRA INFERIOR -->
+  <!-- BARRA INFERIOR (COMPLETA Y ACCESIBLE) -->
   <footer>
     <div class="progress-bar-container">
       <div class="page-counter" id="page-num">Portada</div>
@@ -505,7 +498,7 @@
       </button>
 
       <a class="action-btn btn-approval" href="https://wa.me/524424249172?text=Hola%20Cris%2C%20ya%20revise%20la%20muestra%20del%20photobook%20de%20Caro%20y%20tengo%20los%20siguientes%20comentarios%3A" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.7 4.19 1.9 5.86L2.6 22l4.3-1.25C8.42 21.49 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.7 4.19 1.9 5.86L2.6 22l4.3-1.25C8.42 21.49 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 22zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
         <span>Aprobar / Comentarios</span>
       </a>
     </div>
@@ -556,23 +549,23 @@
       contenedor.appendChild(pageDiv);
     });
 
-    // Medidas precisas
+    // Medidas dinámicas adaptadas al espacio real entre header y footer
     const anchoVentana = window.innerWidth;
     const altoVentana = window.innerHeight;
     const maxAnchoLibro = anchoVentana * (anchoVentana < 768 ? 0.94 : 0.85);
-    const maxAltoLibro = Math.max(260, altoVentana - 150);
+    const maxAltoLibro = Math.max(220, altoVentana - 170);
 
-    let pageBaseSize = Math.floor(Math.min(maxAnchoLibro / 2, maxAltoLibro * 0.75));
-    pageBaseSize = Math.max(160, Math.min(520, pageBaseSize));
+    let pageBaseSize = Math.floor(Math.min(maxAnchoLibro / 2, maxAltoLibro * 0.70));
+    pageBaseSize = Math.max(140, Math.min(520, pageBaseSize));
 
     // Inicializar St.PageFlip
     const pageFlip = new St.PageFlip(contenedor, {
       width: pageBaseSize,
       height: pageBaseSize,
       size: "fixed",
-      minWidth: 140,
+      minWidth: 120,
       maxWidth: 650,
-      minHeight: 140,
+      minHeight: 120,
       maxHeight: 650,
       showCover: true,
       flippingTime: 750,
@@ -585,7 +578,7 @@
     pageFlip.loadFromHTML(document.querySelectorAll(".my-page"));
 
     // ================================================================
-    // MOTOR DE ZOOM Y DESPLAZAMIENTO CENTRADO DE PORTADA (ESTILO HEYZINE)
+    // MOTOR DE ZOOM Y DESPLAZAMIENTO CENTRADO DE PORTADA
     // ================================================================
     const ZOOM_STEPS = [1.0, 1.6, 2.3, 3.1, 4.2, 5.5];
     let currentStepIndex = 0;
@@ -599,18 +592,14 @@
     let pinchStartDist = 0;
     let pinchStartScale = 1.0;
 
-    // Calcula el desplazamiento automático para centrar portada o contraportada
     function getOffsetCentrado() {
-      if (currentScale > 1.08) return 0; // En zoom el usuario controla la posición
-      // La portada ocupa solo la mitad derecha del marco 3D, desplazamos -25% a la izquierda para centrarla
+      if (currentScale > 1.08) return 0;
       if (paginaActual === 0) {
         return -(pageBaseSize / 2);
       }
-      // La contraportada ocupa la mitad izquierda, desplazamos +25% a la derecha para centrarla
       if (paginaActual >= imagenes.length - 1) {
         return (pageBaseSize / 2);
       }
-      // Pliegos dobles abiertos van perfectamente centrados en 0
       return 0;
     }
 
@@ -824,7 +813,7 @@
         syncZoomUI();
       } else {
         actualizarVisibilidadLogo();
-        renderTransform(); // Aplica la animación suave de centrado
+        renderTransform();
       }
     }
 
