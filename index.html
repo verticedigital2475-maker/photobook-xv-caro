@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Muestra de Photobook · Caro Mis XV</title>
   <!-- Librería Page-Flip -->
-  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
   
   <style>
     * {
@@ -27,7 +27,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* HEADER SUPERIOR */
+    /* HEADER */
     header {
       width: 100%;
       padding: 12px 24px;
@@ -38,6 +38,7 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 50;
+      flex-shrink: 0;
     }
     .header-info {
       display: flex;
@@ -97,7 +98,7 @@
       display: none;
     }
 
-    /* AVISO DE ZOOM GRANDE Y DESTACADO */
+    /* AVISO DE ZOOM GRANDE */
     #zoom-hint {
       position: absolute;
       top: 75px;
@@ -110,7 +111,6 @@
       border-radius: 28px;
       font-size: 0.92rem;
       font-weight: 600;
-      letter-spacing: 0.3px;
       z-index: 80;
       opacity: 0;
       pointer-events: none;
@@ -125,7 +125,7 @@
     #zoom-hint.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
-      pointer-events: auto; /* Permite dar tap para salir rápido */
+      pointer-events: auto;
     }
     #zoom-hint .close-tag {
       background: rgba(255, 255, 255, 0.2);
@@ -142,7 +142,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px;
       perspective: 2200px;
       position: relative;
       overflow: hidden;
@@ -150,8 +149,6 @@
     }
 
     #flipbook-container {
-      width: 100%;
-      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -166,7 +163,6 @@
     }
 
     #flipbook {
-      display: none;
       position: relative;
       z-index: 10;
       box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9);
@@ -202,8 +198,8 @@
       transform: translate(-50%, -50%) scale(1.03);
     }
     #brand-badge img {
-      height: 150px !important;
-      width: 150px !important;
+      height: 140px !important;
+      width: 140px !important;
       object-fit: contain;
       filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.85));
     }
@@ -221,7 +217,7 @@
       font-weight: 500;
     }
     .brand-text .main {
-      font-size: 2.6rem;
+      font-size: 2.5rem;
       font-weight: 800;
       color: #ffffff;
     }
@@ -270,6 +266,7 @@
       align-items: center;
       gap: 10px;
       z-index: 50;
+      flex-shrink: 0;
     }
 
     .progress-bar-container {
@@ -374,7 +371,6 @@
 
   <div id="toast">Enlace copiado al portapapeles</div>
   
-  <!-- AVISO DE ZOOM GRANDE E INTERACTIVO -->
   <div id="zoom-hint">
     <span id="zoom-hint-text">🔍 Zoom 1/2 · Arrastra para explorar</span>
     <span class="close-tag">Toca para salir</span>
@@ -394,12 +390,11 @@
         </svg>
       </button>
 
-      <!-- BOTÓN DE LUPA CON INDICADOR DE NIVEL -->
-      <button class="tool-btn" id="btn-zoom" title="Zoom multinivel">
+      <button class="tool-btn" id="btn-zoom" title="Zoom">
         <svg viewBox="0 0 24 24">
           <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm.5-7H9v2H7v1h2v2h1v-2h2V9h-2z"/>
         </svg>
-        <span class="zoom-level-badge" id="zoom-badge">2x</span>
+        <span class="zoom-level-badge" id="zoom-badge">1</span>
       </button>
 
       <button class="tool-btn" id="btn-fullscreen" title="Pantalla completa">
@@ -494,27 +489,27 @@
       const img = document.createElement("img");
       img.src = src;
       img.alt = `Página ${index + 1}`;
-      if (index > 4) img.loading = "lazy";
       pageDiv.appendChild(img);
       contenedor.appendChild(pageDiv);
     });
 
-    // Medidas adaptativas
+    // CÁLCULO EN PÍXELES EXACTOS PARA QUE NUNCA COLAPSE
     const anchoVentana = window.innerWidth;
     const altoVentana = window.innerHeight;
     const maxAnchoLibro = anchoVentana * (anchoVentana < 768 ? 0.94 : 0.85);
-    const maxAltoLibro = (altoVentana - 130) * 0.88;
-    let pageBaseSize = Math.floor(Math.min(maxAnchoLibro / 2, maxAltoLibro));
-    pageBaseSize = Math.max(120, Math.min(520, pageBaseSize));
+    const maxAltoLibro = Math.max(260, altoVentana - 150);
 
-    // Inicializar St.PageFlip
+    let pageBaseSize = Math.floor(Math.min(maxAnchoLibro / 2, maxAltoLibro * 0.75));
+    pageBaseSize = Math.max(160, Math.min(520, pageBaseSize));
+
+    // Inicializar St.PageFlip en modo FIXED
     const pageFlip = new St.PageFlip(contenedor, {
       width: pageBaseSize,
       height: pageBaseSize,
-      size: "stretch",
-      minWidth: 100,
+      size: "fixed",             // ¡FIXED garantiza que no se reduzca a 0!
+      minWidth: 140,
       maxWidth: 650,
-      minHeight: 100,
+      minHeight: 140,
       maxHeight: 650,
       showCover: true,
       flippingTime: 750,
@@ -525,18 +520,14 @@
     });
 
     pageFlip.loadFromHTML(document.querySelectorAll(".my-page"));
-    contenedor.style.display = "block";
 
-    // SISTEMA DE ZOOM EN 2 NIVELES CON BLOQUEO ANTIDESBLOQUEO ACCIDENTAL
-    // Nivel 0: Normal (1x)
-    // Nivel 1: Zoom Pliego (2.5x en PC / 2.8x en Móvil)
-    // Nivel 2: Súper Zoom Detalle (4.8x para tipografía y caras)
+    // SISTEMA DE ZOOM EN 2 NIVELES CON BLOQUEO SEGURO
     let zoomLevel = 0;
     let currentScale = 1;
     let panX = 0, panY = 0;
     let startX = 0, startY = 0;
     let isDragging = false;
-    let dragDistance = 0; // Para no confundir arrastre con tap
+    let dragDistance = 0;
 
     function aplicarTransformacion() {
       if (zoomLevel > 0) {
@@ -553,32 +544,29 @@
       if (zoomLevel === 1) {
         currentScale = isMobile ? 2.8 : 2.5;
         flipContainer.classList.add("zoomed");
-        btnZoom.classList.add("active");
-        zoomBadge.style.display = "block";
-        zoomBadge.innerText = "1";
-        zoomHintText.innerText = "🔍 Zoom 1/2 · Arrastra para explorar";
-        zoomHint.classList.add("show");
-        contenedor.style.pointerEvents = "none"; // Bloquea pasar páginas
+        if (btnZoom) btnZoom.classList.add("active");
+        if (zoomBadge) { zoomBadge.style.display = "block"; zoomBadge.innerText = "1"; }
+        if (zoomHintText) zoomHintText.innerText = "🔍 Zoom 1/2 · Arrastra para explorar";
+        if (zoomHint) zoomHint.classList.add("show");
+        contenedor.style.pointerEvents = "none";
       } else if (zoomLevel === 2) {
-        currentScale = isMobile ? 4.8 : 4.2; // Súper acercamiento para leer tipografía
+        currentScale = isMobile ? 4.8 : 4.2;
         flipContainer.classList.add("zoomed");
-        btnZoom.classList.add("active");
-        zoomBadge.style.display = "block";
-        zoomBadge.innerText = "2";
-        zoomHintText.innerText = "🔍 Súper Zoom 2/2 · Máximo detalle";
-        zoomHint.classList.add("show");
+        if (btnZoom) btnZoom.classList.add("active");
+        if (zoomBadge) { zoomBadge.style.display = "block"; zoomBadge.innerText = "2"; }
+        if (zoomHintText) zoomHintText.innerText = "🔍 Súper Zoom 2/2 · Máximo detalle";
+        if (zoomHint) zoomHint.classList.add("show");
         contenedor.style.pointerEvents = "none";
       } else {
-        // Reset a normal
         zoomLevel = 0;
         currentScale = 1;
         panX = 0;
         panY = 0;
         flipContainer.classList.remove("zoomed");
-        btnZoom.classList.remove("active");
-        zoomBadge.style.display = "none";
-        zoomHint.classList.remove("show");
-        contenedor.style.pointerEvents = "auto"; // Reactiva pasar páginas
+        if (btnZoom) btnZoom.classList.remove("active");
+        if (zoomBadge) zoomBadge.style.display = "none";
+        if (zoomHint) zoomHint.classList.remove("show");
+        contenedor.style.pointerEvents = "auto";
       }
       aplicarTransformacion();
     }
@@ -589,14 +577,13 @@
       else setZoomLevel(0);
     }
 
-    btnZoom.addEventListener("click", avanzarZoom);
-    zoomHint.addEventListener("click", () => setZoomLevel(0)); // Clic en el anuncio para salir
+    if (btnZoom) btnZoom.addEventListener("click", avanzarZoom);
+    if (zoomHint) zoomHint.addEventListener("click", () => setZoomLevel(0));
 
-    // DOBLE TAP INTELIGENTE (Solo si NO hubo arrastre)
+    // Doble tap
     let lastTapTime = 0;
     wrapper.addEventListener("touchend", (e) => {
       const now = new Date().getTime();
-      // Si el usuario movió el dedo más de 12 píxeles, fue un arrastre de foto, NO un tap
       if (dragDistance < 12) {
         if (now - lastTapTime < 320 && now - lastTapTime > 0) {
           avanzarZoom();
@@ -607,7 +594,7 @@
       isDragging = false;
     });
 
-    // CONTROL DE ARRASTRE TÁCTIL Y RATÓN
+    // Arrastre
     function startDrag(x, y) {
       if (zoomLevel === 0) return;
       isDragging = true;
@@ -627,17 +614,140 @@
       aplicarTransformacion();
     }
 
-    // Mouse
     wrapper.addEventListener("mousedown", (e) => startDrag(e.clientX, e.clientY));
     window.addEventListener("mousemove", (e) => moveDrag(e.clientX, e.clientY));
     window.addEventListener("mouseup", () => { isDragging = false; });
 
-    // Touch
     wrapper.addEventListener("touchstart", (e) => {
-      if (e.touches.length === 1) {
-        startDrag(e.touches[0].clientX, e.touches[0].clientY);
-      }
+      if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
     wrapper.addEventListener("touchmove", (e) => {
-      if (e.touches.length === 1 && zoomLevel >
+      if (e.touches.length === 1 && zoomLevel > 0) moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+
+    // SONIDO
+    let audioActivo = true;
+    let audioCtx = null;
+
+    function reproducirSonidoHoja() {
+      if (!audioActivo) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const bufferSize = audioCtx.sampleRate * 0.20;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.value = 1100;
+        filter.Q.value = 1.2;
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.20);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+      } catch (e) {}
+    }
+
+    // ESTADO Y NAVEGACIÓN
+    function actualizarVista(indice) {
+      if (brandBadge) {
+        if (indice === 0) {
+          brandBadge.style.opacity = "1";
+          brandBadge.style.pointerEvents = "auto";
+        } else {
+          brandBadge.style.opacity = "0";
+          brandBadge.style.pointerEvents = "none";
+        }
+      }
+
+      if (numPaginaTxt) {
+        if (indice === 0) {
+          numPaginaTxt.innerText = "Portada";
+        } else if (indice >= imagenes.length - 1) {
+          numPaginaTxt.innerText = "Contraportada";
+        } else {
+          numPaginaTxt.innerText = `Páginas ${indice} - ${indice + 1}`;
+        }
+      }
+
+      if (sliderFill) {
+        const porcentaje = (indice / (imagenes.length - 1)) * 100;
+        sliderFill.style.width = `${porcentaje}%`;
+      }
+
+      if (zoomLevel > 0) setZoomLevel(0);
+    }
+
+    actualizarVista(0);
+
+    pageFlip.on("flip", (e) => {
+      reproducirSonidoHoja();
+      actualizarVista(e.data);
+    });
+
+    const arrowPrev = document.getElementById("arrow-prev");
+    const arrowNext = document.getElementById("arrow-next");
+    if (arrowPrev) arrowPrev.addEventListener("click", () => pageFlip.flipPrev());
+    if (arrowNext) arrowNext.addEventListener("click", () => pageFlip.flipNext());
+
+    const btnFullscreen = document.getElementById("btn-fullscreen");
+    if (btnFullscreen) {
+      btnFullscreen.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      });
+    }
+
+    const btnSound = document.getElementById("btn-sound");
+    const iconSound = document.getElementById("icon-sound");
+    if (btnSound && iconSound) {
+      btnSound.addEventListener("click", () => {
+        audioActivo = !audioActivo;
+        if (audioActivo) {
+          iconSound.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
+          reproducirSonidoHoja();
+        } else {
+          iconSound.innerHTML = `<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>`;
+        }
+      });
+    }
+
+    const btnShare = document.getElementById("btn-share");
+    const toast = document.getElementById("toast");
+    if (btnShare && toast) {
+      btnShare.addEventListener("click", () => {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 2200);
+        });
+      });
+    }
+
+    const sliderTrack = document.getElementById("slider-track");
+    if (sliderTrack) {
+      sliderTrack.addEventListener("click", (e) => {
+        const rect = sliderTrack.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+        const targetPage = Math.round(ratio * (imagenes.length - 1));
+        pageFlip.flip(targetPage);
+      });
+    }
+  </script>
+</body>
+</html>
