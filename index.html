@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Muestra de Photobook · Caro Mis XV</title>
   <!-- Librería Page-Flip -->
   <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
@@ -24,16 +24,17 @@
       overflow: hidden;
       color: #fff;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* HEADER SUPERIOR */
     header {
       width: 100%;
-      padding: 12px 24px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(18, 19, 22, 0.65);
+      background: rgba(18, 19, 22, 0.7);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 50;
@@ -43,28 +44,28 @@
       flex-direction: column;
     }
     .brand-title {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 600;
       letter-spacing: 0.5px;
       color: #f5f5f7;
     }
     .brand-subtitle {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: #9aa0a6;
     }
 
-    /* BARRA DE HERRAMIENTAS SUPERIOR DERECHA */
+    /* HERRAMIENTAS SUPERIORES */
     .top-toolbar {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .tool-btn {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #e4e7eb;
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -73,14 +74,40 @@
       transition: all 0.2s ease;
     }
     .tool-btn:hover, .tool-btn.active {
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(56, 189, 248, 0.25);
       color: #38bdf8;
       border-color: #38bdf8;
     }
     .tool-btn svg {
-      width: 19px;
-      height: 19px;
+      width: 18px;
+      height: 18px;
       fill: currentColor;
+    }
+
+    /* MENSAJE INDICADOR DE ZOOM */
+    #zoom-hint {
+      position: absolute;
+      top: 65px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      color: #e2e8f0;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      text-align: center;
+      max-width: 90%;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    }
+    #zoom-hint.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     /* ÁREA DEL LIBRO */
@@ -90,11 +117,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 15px 20px;
+      padding: 10px;
       perspective: 2200px;
       position: relative;
       overflow: hidden;
-      touch-action: pan-x pan-y;
+      touch-action: none; /* Control táctil nativo bajo JavaScript */
     }
 
     #flipbook-container {
@@ -104,8 +131,7 @@
       align-items: center;
       justify-content: center;
       transform-origin: center center;
-      transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-      cursor: default;
+      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     #flipbook-container.zoomed {
       cursor: grab;
@@ -118,7 +144,7 @@
       display: none;
       position: relative;
       z-index: 10;
-      box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9);
     }
     .my-page {
       background-color: #151515;
@@ -132,16 +158,16 @@
       -webkit-user-drag: none;
     }
 
-    /* LOGOTIPO LATERAL EN EL FONDO */
+    /* LOGOTIPO LATERAL EN EL FONDO (PC) */
     #brand-badge {
       position: absolute;
-      left: 20%;
+      left: 18%;
       top: 50%;
       transform: translate(-50%, -50%);
       z-index: 5;
       display: flex;
       align-items: center;
-      gap: 22px;
+      gap: 18px;
       text-decoration: none;
       color: #ffffff;
       opacity: 1;
@@ -151,8 +177,8 @@
       transform: translate(-50%, -50%) scale(1.03);
     }
     #brand-badge img {
-      height: 170px !important;
-      width: 170px !important;
+      height: 150px !important;
+      width: 150px !important;
       object-fit: contain;
       filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.85));
     }
@@ -163,26 +189,25 @@
       text-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
     }
     .brand-text .sub {
-      font-size: 1.3rem;
-      letter-spacing: 3px;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
       text-transform: uppercase;
       color: #cfcfcf;
       font-weight: 500;
     }
     .brand-text .main {
-      font-size: 3rem;
+      font-size: 2.6rem;
       font-weight: 800;
       color: #ffffff;
-      letter-spacing: 1px;
     }
 
-    /* FLECHAS FLOTANTES LATERALES */
+    /* FLECHAS FLOTANTES */
     .nav-arrow {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: rgba(20, 22, 26, 0.65);
       backdrop-filter: blur(8px);
@@ -198,20 +223,20 @@
     }
     .nav-arrow:hover {
       background: rgba(255, 255, 255, 0.25);
-      transform: translateY(-50%) scale(1.1);
+      transform: translateY(-50%) scale(1.08);
     }
-    .nav-arrow.left { left: 24px; }
-    .nav-arrow.right { right: 24px; }
+    .nav-arrow.left { left: 16px; }
+    .nav-arrow.right { right: 16px; }
     .nav-arrow svg {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       fill: currentColor;
     }
 
     /* BARRA INFERIOR */
     footer {
       width: 100%;
-      padding: 10px 24px 14px;
+      padding: 10px 16px 14px;
       background: rgba(18, 19, 22, 0.7);
       backdrop-filter: blur(12px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -224,7 +249,7 @@
 
     .progress-bar-container {
       width: 100%;
-      max-width: 520px;
+      max-width: 480px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -248,25 +273,25 @@
       transition: width 0.3s ease;
     }
     .page-counter {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #cbd5e1;
       font-weight: 500;
-      min-width: 110px;
+      min-width: 100px;
       text-align: center;
     }
 
     .bottom-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .action-btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 7px 16px;
+      gap: 7px;
+      padding: 7px 15px;
       border-radius: 20px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
@@ -278,33 +303,26 @@
       border-color: rgba(255, 255, 255, 0.15);
       color: #f1f5f9;
     }
-    .btn-copy:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
     .btn-approval {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: #ffffff;
       box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
     }
-    .btn-approval:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
-    }
     .action-btn svg {
-      width: 15px;
-      height: 15px;
+      width: 14px;
+      height: 14px;
       fill: currentColor;
     }
 
     #toast {
       position: fixed;
-      top: 75px;
+      top: 65px;
       background: rgba(30, 41, 59, 0.95);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
-      padding: 8px 18px;
+      padding: 7px 16px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       z-index: 100;
       opacity: 0;
       transform: translateY(-10px);
@@ -316,14 +334,6 @@
       transform: translateY(0);
     }
 
-    @media (max-width: 1250px) {
-      #brand-badge img {
-        height: 110px !important;
-        width: 110px !important;
-      }
-      .brand-text .sub { font-size: 0.95rem; }
-      .brand-text .main { font-size: 2rem; }
-    }
     @media (max-width: 900px) {
       #brand-badge { display: none !important; }
       .nav-arrow { display: none; }
@@ -333,6 +343,7 @@
 <body>
 
   <div id="toast">Enlace copiado al portapapeles</div>
+  <div id="zoom-hint">🔍 Zoom activo · Arrastra para explorar · Quita el zoom para hojear</div>
 
   <!-- HEADER -->
   <header>
@@ -348,9 +359,8 @@
         </svg>
       </button>
 
-      <!-- Botón de Lupa con indicador de estado -->
       <button class="tool-btn" id="btn-zoom" title="Acercar detalles (2.5x)">
-        <svg id="icon-zoom" viewBox="0 0 24 24">
+        <svg viewBox="0 0 24 24">
           <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm.5-7H9v2H7v1h2v2h1v-2h2V9h-2z"/>
         </svg>
       </button>
@@ -433,8 +443,9 @@
     const brandBadge = document.getElementById("brand-badge");
     const numPaginaTxt = document.getElementById("page-num");
     const sliderFill = document.getElementById("slider-fill");
+    const zoomHint = document.getElementById("zoom-hint");
 
-    // Construcción de páginas
+    // Construcción de páginas con carga inteligente
     imagenes.forEach((src, index) => {
       const pageDiv = document.createElement("div");
       pageDiv.className = "my-page";
@@ -443,29 +454,37 @@
       const img = document.createElement("img");
       img.src = src;
       img.alt = `Página ${index + 1}`;
+      if (index > 4) {
+        img.loading = "lazy"; // Las páginas lejanas no saturan el inicio de la app
+      }
       pageDiv.appendChild(img);
       contenedor.appendChild(pageDiv);
     });
 
-    // Medidas adaptativas
-    const altoVentana = window.innerHeight;
+    // CÁLCULO PRECISO PARA ENCAJAR PERFECTO EN CELULAR Y PC
     const anchoVentana = window.innerWidth;
-    const maxAltoDisponible = Math.floor(altoVentana * 0.68);
-    const maxAnchoDisponiblePorPagina = Math.floor((anchoVentana * 0.82) / 2);
-    const pageBaseSize = Math.max(260, Math.min(520, maxAltoDisponible, maxAnchoDisponiblePorPagina));
+    const altoVentana = window.innerHeight;
+
+    // En celular dejamos margen limpio; el pliego completo ocupa el ancho disponible
+    const maxAnchoLibro = anchoVentana * (anchoVentana < 768 ? 0.94 : 0.85);
+    const maxAltoLibro = (altoVentana - 130) * 0.88;
+
+    // Cada página mide la mitad del ancho total del libro
+    let pageBaseSize = Math.floor(Math.min(maxAnchoLibro / 2, maxAltoLibro));
+    pageBaseSize = Math.max(120, Math.min(520, pageBaseSize));
 
     // Inicializar PageFlip
     const pageFlip = new St.PageFlip(contenedor, {
       width: pageBaseSize,
       height: pageBaseSize,
       size: "stretch",
-      minWidth: 240,
+      minWidth: 100,
       maxWidth: 650,
-      minHeight: 240,
+      minHeight: 100,
       maxHeight: 650,
       showCover: true,
-      flippingTime: 800,
-      usePortrait: false,
+      flippingTime: 750,
+      usePortrait: false,        // Siempre muestra el pliego panorámico completo
       startPage: 0,
       drawShadow: true,
       maxShadowOpacity: 0.7
@@ -474,7 +493,7 @@
     pageFlip.loadFromHTML(document.querySelectorAll(".my-page"));
     contenedor.style.display = "block";
 
-    // SISTEMA DE ZOOM PROFUNDO (2.5X) CON ARRASTRE LIBRE (PAN)
+    // SISTEMA DE ZOOM SEGURO: BLOQUEA EL CAMBIO DE PÁGINAS MIENTRAS HAYA ZOOM
     let isZoomed = false;
     let currentScale = 1;
     let panX = 0, panY = 0;
@@ -489,82 +508,86 @@
       }
     }
 
-    function toggleZoom(targetX = 0, targetY = 0) {
+    function toggleZoom() {
       isZoomed = !isZoomed;
       const btnZoom = document.getElementById("btn-zoom");
 
       if (isZoomed) {
-        currentScale = 2.4; // 240% de acercamiento real
+        // En celular aplica 2.8x para máxima definición de rostros; en PC 2.2x
+        currentScale = window.innerWidth < 768 ? 2.8 : 2.2;
         flipContainer.classList.add("zoomed");
         btnZoom.classList.add("active");
-        panX = targetX;
-        panY = targetY;
+        zoomHint.classList.add("show");
+        
+        // ¡CLAVE! Desactiva los toques en el libro para que NUNCA cambie de página con zoom
+        contenedor.style.pointerEvents = "none";
+        panX = 0;
+        panY = 0;
       } else {
         currentScale = 1;
         panX = 0;
         panY = 0;
         flipContainer.classList.remove("zoomed");
         btnZoom.classList.remove("active");
+        zoomHint.classList.remove("show");
+
+        // Reactiva el paso de páginas normal al quitar el zoom
+        contenedor.style.pointerEvents = "auto";
       }
       aplicarTransformacion();
     }
 
-    // Botón de lupa
-    document.getElementById("btn-zoom").addEventListener("click", () => {
-      toggleZoom(0, 0);
-    });
+    document.getElementById("btn-zoom").addEventListener("click", toggleZoom);
 
-    // Doble toque / Doble clic para zoom rápido
+    // Doble toque rápido para entrar/salir de zoom
     let lastTap = 0;
     wrapper.addEventListener("touchend", (e) => {
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-      if (tapLength < 300 && tapLength > 0) {
-        toggleZoom(0, 0);
+      const now = new Date().getTime();
+      if (now - lastTap < 300 && now - lastTap > 0) {
+        toggleZoom();
         e.preventDefault();
       }
-      lastTap = currentTime;
+      lastTap = now;
     });
 
-    // ARRASTRE CON RATÓN (DESKTOPS)
-    wrapper.addEventListener("mousedown", (e) => {
+    // ARRASTRE DE ZOOM (RATÓN Y DEDO)
+    function onStart(x, y) {
       if (!isZoomed) return;
       isDragging = true;
-      startX = e.clientX - panX;
-      startY = e.clientY - panY;
-    });
+      startX = x - panX;
+      startY = y - panY;
+    }
 
-    window.addEventListener("mousemove", (e) => {
+    function onMove(x, y) {
       if (!isDragging || !isZoomed) return;
-      panX = e.clientX - startX;
-      panY = e.clientY - startY;
+      panX = x - startX;
+      panY = y - startY;
       aplicarTransformacion();
-    });
+    }
 
-    window.addEventListener("mouseup", () => {
+    function onEnd() {
       isDragging = false;
-    });
+    }
 
-    // ARRASTRE TÁCTIL (MÓVILES / TABLETS)
+    // Eventos Mouse
+    wrapper.addEventListener("mousedown", (e) => onStart(e.clientX, e.clientY));
+    window.addEventListener("mousemove", (e) => onMove(e.clientX, e.clientY));
+    window.addEventListener("mouseup", onEnd);
+
+    // Eventos Táctiles Móvil
     wrapper.addEventListener("touchstart", (e) => {
-      if (!isZoomed || e.touches.length !== 1) return;
-      isDragging = true;
-      startX = e.touches[0].clientX - panX;
-      startY = e.touches[0].clientY - panY;
+      if (e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
 
     wrapper.addEventListener("touchmove", (e) => {
-      if (!isDragging || !isZoomed || e.touches.length !== 1) return;
-      panX = e.touches[0].clientX - startX;
-      panY = e.touches[0].clientY - startY;
-      aplicarTransformacion();
+      if (e.touches.length === 1 && isZoomed) {
+        onMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
     }, { passive: true });
 
-    wrapper.addEventListener("touchend", () => {
-      isDragging = false;
-    });
+    wrapper.addEventListener("touchend", onEnd);
 
-    // SONIDO
+    // SONIDO AL PASAR PÁGINA
     let audioActivo = true;
     let audioCtx = null;
 
@@ -574,7 +597,7 @@
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
 
-        const bufferSize = audioCtx.sampleRate * 0.22;
+        const bufferSize = audioCtx.sampleRate * 0.20;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
@@ -589,8 +612,8 @@
 
         const gain = audioCtx.createGain();
         gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.28, audioCtx.currentTime + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
+        gain.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.20);
 
         noise.connect(filter);
         filter.connect(gain);
@@ -599,7 +622,7 @@
       } catch (e) {}
     }
 
-    // ACTUALIZACIÓN DE ESTADO
+    // ESTADO Y NAVEGACIÓN
     function actualizarVista(indice) {
       if (indice === 0) {
         brandBadge.style.opacity = "1";
@@ -620,10 +643,7 @@
       const porcentaje = (indice / (imagenes.length - 1)) * 100;
       sliderFill.style.width = `${porcentaje}%`;
 
-      // Si el cliente pasa de hoja, restablecer el zoom para ver el nuevo pliego completo
-      if (isZoomed) {
-        toggleZoom();
-      }
+      if (isZoomed) toggleZoom();
     }
 
     actualizarVista(0);
