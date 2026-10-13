@@ -55,7 +55,7 @@
       color: #9aa0a6;
     }
 
-    /* HERRAMIENTAS SUPERIORES */
+    /* BARRA DE HERRAMIENTAS SUPERIOR DERECHA */
     .top-toolbar {
       display: flex;
       align-items: center;
@@ -98,7 +98,7 @@
       display: none;
     }
 
-    /* AVISO DE ZOOM GRANDE */
+    /* GLOBO AZUL DE AVISO DE ZOOM */
     #zoom-hint {
       position: absolute;
       top: 75px;
@@ -114,7 +114,7 @@
       z-index: 80;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       text-align: center;
       display: flex;
       align-items: center;
@@ -135,7 +135,7 @@
       margin-left: 6px;
     }
 
-    /* ÁREA DEL LIBRO */
+    /* ÁREA PRINCIPAL */
     .book-wrapper {
       flex: 1;
       width: 100%;
@@ -145,7 +145,7 @@
       perspective: 2200px;
       position: relative;
       overflow: hidden;
-      touch-action: none;
+      touch-action: none; /* Control total por JS */
     }
 
     #flipbook-container {
@@ -153,7 +153,8 @@
       align-items: center;
       justify-content: center;
       transform-origin: center center;
-      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: transform 0.05s linear; /* Ultra fluido en pellizco */
+      will-change: transform;
     }
     #flipbook-container.zoomed {
       cursor: grab;
@@ -179,7 +180,7 @@
       -webkit-user-drag: none;
     }
 
-    /* LOGOTIPO LATERAL EN EL FONDO (PC) */
+    /* LOGO LATERAL */
     #brand-badge {
       position: absolute;
       left: 18%;
@@ -222,7 +223,7 @@
       color: #ffffff;
     }
 
-    /* FLECHAS FLOTANTES */
+    /* FLECHAS */
     .nav-arrow {
       position: absolute;
       top: 50%;
@@ -254,7 +255,7 @@
       fill: currentColor;
     }
 
-    /* BARRA INFERIOR */
+    /* FOOTER */
     footer {
       width: 100%;
       padding: 10px 16px 14px;
@@ -268,7 +269,6 @@
       z-index: 50;
       flex-shrink: 0;
     }
-
     .progress-bar-container {
       width: 100%;
       max-width: 480px;
@@ -301,7 +301,6 @@
       min-width: 100px;
       text-align: center;
     }
-
     .bottom-actions {
       display: flex;
       align-items: center;
@@ -360,7 +359,7 @@
       #brand-badge { display: none !important; }
       .nav-arrow { display: none; }
       #zoom-hint {
-        width: 90%;
+        width: 92%;
         font-size: 0.82rem;
         padding: 9px 14px;
       }
@@ -372,7 +371,7 @@
   <div id="toast">Enlace copiado al portapapeles</div>
   
   <div id="zoom-hint">
-    <span id="zoom-hint-text">🔍 Zoom 1/2 · Arrastra para explorar</span>
+    <span id="zoom-hint-text">🔍 Zoom 1/5 · Arrastra para explorar</span>
     <span class="close-tag">Toca para salir</span>
   </div>
 
@@ -390,7 +389,8 @@
         </svg>
       </button>
 
-      <button class="tool-btn" id="btn-zoom" title="Zoom">
+      <!-- BOTÓN DE LUPA (6 PASOS) -->
+      <button class="tool-btn" id="btn-zoom" title="Zoom en 6 pasos">
         <svg viewBox="0 0 24 24">
           <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm.5-7H9v2H7v1h2v2h1v-2h2V9h-2z"/>
         </svg>
@@ -489,11 +489,12 @@
       const img = document.createElement("img");
       img.src = src;
       img.alt = `Página ${index + 1}`;
+      if (index > 4) img.loading = "lazy";
       pageDiv.appendChild(img);
       contenedor.appendChild(pageDiv);
     });
 
-    // CÁLCULO EN PÍXELES EXACTOS PARA QUE NUNCA COLAPSE
+    // Medidas precisas
     const anchoVentana = window.innerWidth;
     const altoVentana = window.innerHeight;
     const maxAnchoLibro = anchoVentana * (anchoVentana < 768 ? 0.94 : 0.85);
@@ -502,11 +503,11 @@
     let pageBaseSize = Math.floor(Math.min(maxAnchoLibro / 2, maxAltoLibro * 0.75));
     pageBaseSize = Math.max(160, Math.min(520, pageBaseSize));
 
-    // Inicializar St.PageFlip en modo FIXED
+    // Inicializar St.PageFlip
     const pageFlip = new St.PageFlip(contenedor, {
       width: pageBaseSize,
       height: pageBaseSize,
-      size: "fixed",             // ¡FIXED garantiza que no se reduzca a 0!
+      size: "fixed",
       minWidth: 140,
       maxWidth: 650,
       minHeight: 140,
@@ -521,110 +522,169 @@
 
     pageFlip.loadFromHTML(document.querySelectorAll(".my-page"));
 
-    // SISTEMA DE ZOOM EN 2 NIVELES CON BLOQUEO SEGURO
-    let zoomLevel = 0;
-    let currentScale = 1;
+    // ================================================================
+    // MOTOR DE ZOOM AVANZADO: 6 PASOS + PELLIZCO FLUIDO (PINCH TO ZOOM)
+    // ================================================================
+    const ZOOM_STEPS = [1.0, 1.6, 2.3, 3.1, 4.2, 5.5];
+    let currentStepIndex = 0;
+    let currentScale = 1.0;
     let panX = 0, panY = 0;
-    let startX = 0, startY = 0;
-    let isDragging = false;
-    let dragDistance = 0;
 
-    function aplicarTransformacion() {
-      if (zoomLevel > 0) {
-        flipContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentScale})`;
-      } else {
-        flipContainer.style.transform = `translate(0px, 0px) scale(1)`;
-      }
+    // Variables para arrastre de 1 dedo / mouse
+    let isDragging = false;
+    let dragStartX = 0, dragStartY = 0;
+    let totalMoved = 0;
+
+    // Variables para pellizco de 2 dedos
+    let isPinching = false;
+    let pinchStartDist = 0;
+    let pinchStartScale = 1.0;
+
+    function renderTransform() {
+      flipContainer.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${currentScale})`;
     }
 
-    function setZoomLevel(level) {
-      zoomLevel = level;
-      const isMobile = window.innerWidth < 768;
+    // Actualiza la UI según la escala
+    function syncZoomUI() {
+      const isZoomed = currentScale > 1.08;
 
-      if (zoomLevel === 1) {
-        currentScale = isMobile ? 2.8 : 2.5;
+      if (isZoomed) {
         flipContainer.classList.add("zoomed");
-        if (btnZoom) btnZoom.classList.add("active");
-        if (zoomBadge) { zoomBadge.style.display = "block"; zoomBadge.innerText = "1"; }
-        if (zoomHintText) zoomHintText.innerText = "🔍 Zoom 1/2 · Arrastra para explorar";
-        if (zoomHint) zoomHint.classList.add("show");
-        contenedor.style.pointerEvents = "none";
-      } else if (zoomLevel === 2) {
-        currentScale = isMobile ? 4.8 : 4.2;
-        flipContainer.classList.add("zoomed");
-        if (btnZoom) btnZoom.classList.add("active");
-        if (zoomBadge) { zoomBadge.style.display = "block"; zoomBadge.innerText = "2"; }
-        if (zoomHintText) zoomHintText.innerText = "🔍 Súper Zoom 2/2 · Máximo detalle";
-        if (zoomHint) zoomHint.classList.add("show");
-        contenedor.style.pointerEvents = "none";
+        btnZoom.classList.add("active");
+        contenedor.style.pointerEvents = "none"; // BLOQUEA el pase de hojas
+
+        // Determinar paso visual
+        let displayStep = currentStepIndex;
+        if (displayStep === 0) {
+          // Si fue pellizco manual, calculamos el paso más cercano
+          displayStep = Math.min(5, Math.max(1, Math.round((currentScale - 1) / 0.9)));
+        }
+
+        zoomBadge.style.display = "block";
+        zoomBadge.innerText = displayStep;
+        zoomHintText.innerText = `🔍 Zoom ${displayStep}/5 (${currentScale.toFixed(1)}x) · Arrastra`;
+        zoomHint.classList.add("show");
       } else {
-        zoomLevel = 0;
-        currentScale = 1;
+        currentScale = 1.0;
+        currentStepIndex = 0;
         panX = 0;
         panY = 0;
         flipContainer.classList.remove("zoomed");
-        if (btnZoom) btnZoom.classList.remove("active");
-        if (zoomBadge) zoomBadge.style.display = "none";
-        if (zoomHint) zoomHint.classList.remove("show");
-        contenedor.style.pointerEvents = "auto";
+        btnZoom.classList.remove("active");
+        zoomBadge.style.display = "none";
+        zoomHint.classList.remove("show");
+        contenedor.style.pointerEvents = "auto"; // REACTIVA el pase de hojas
       }
-      aplicarTransformacion();
+      renderTransform();
     }
 
-    function avanzarZoom() {
-      if (zoomLevel === 0) setZoomLevel(1);
-      else if (zoomLevel === 1) setZoomLevel(2);
-      else setZoomLevel(0);
+    // Botón de la Lupa (Ciclo en 6 pasos: 1.0 -> 1.6 -> 2.3 -> 3.1 -> 4.2 -> 5.5 -> 1.0)
+    function onLupaClick() {
+      currentStepIndex = (currentStepIndex + 1) % ZOOM_STEPS.length;
+      currentScale = ZOOM_STEPS[currentStepIndex];
+      if (currentStepIndex === 0) {
+        panX = 0;
+        panY = 0;
+      }
+      syncZoomUI();
     }
 
-    if (btnZoom) btnZoom.addEventListener("click", avanzarZoom);
-    if (zoomHint) zoomHint.addEventListener("click", () => setZoomLevel(0));
-
-    // Doble tap
-    let lastTapTime = 0;
-    wrapper.addEventListener("touchend", (e) => {
-      const now = new Date().getTime();
-      if (dragDistance < 12) {
-        if (now - lastTapTime < 320 && now - lastTapTime > 0) {
-          avanzarZoom();
-          e.preventDefault();
-        }
-      }
-      lastTapTime = now;
-      isDragging = false;
+    btnZoom.addEventListener("click", onLupaClick);
+    zoomHint.addEventListener("click", () => {
+      currentStepIndex = 0;
+      currentScale = 1.0;
+      syncZoomUI();
     });
 
-    // Arrastre
-    function startDrag(x, y) {
-      if (zoomLevel === 0) return;
-      isDragging = true;
-      dragDistance = 0;
-      startX = x - panX;
-      startY = y - panY;
+    // ================================================================
+    // GESTOS TÁCTILES: PELLIZCO (2 DEDOS) Y ARRASTRE (1 DEDO)
+    // ================================================================
+    function getDistance(t1, t2) {
+      return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
     }
-
-    function moveDrag(x, y) {
-      if (!isDragging || zoomLevel === 0) return;
-      const dx = x - (startX + panX);
-      const dy = y - (startY + panY);
-      dragDistance += Math.hypot(dx, dy);
-
-      panX = x - startX;
-      panY = y - startY;
-      aplicarTransformacion();
-    }
-
-    wrapper.addEventListener("mousedown", (e) => startDrag(e.clientX, e.clientY));
-    window.addEventListener("mousemove", (e) => moveDrag(e.clientX, e.clientY));
-    window.addEventListener("mouseup", () => { isDragging = false; });
 
     wrapper.addEventListener("touchstart", (e) => {
-      if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: true });
+      if (e.touches.length === 2) {
+        // INICIO DE PELLIZCO: Anula inmediatamente el libro para no pasar hoja
+        isPinching = true;
+        isDragging = false;
+        pinchStartDist = getDistance(e.touches[0], e.touches[1]);
+        pinchStartScale = currentScale;
+        contenedor.style.pointerEvents = "none";
+        e.preventDefault();
+      } else if (e.touches.length === 1) {
+        // Un solo dedo: arrastrar si hay zoom
+        if (currentScale > 1.08) {
+          isDragging = true;
+          totalMoved = 0;
+          dragStartX = e.touches[0].clientX - panX;
+          dragStartY = e.touches[0].clientY - panY;
+        }
+      }
+    }, { passive: false });
 
     wrapper.addEventListener("touchmove", (e) => {
-      if (e.touches.length === 1 && zoomLevel > 0) moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: true });
+      if (isPinching && e.touches.length === 2) {
+        // PELLIZCO ACTIVO
+        const currentDist = getDistance(e.touches[0], e.touches[1]);
+        const factor = currentDist / pinchStartDist;
+        currentScale = Math.min(5.8, Math.max(1.0, pinchStartScale * factor));
+        
+        // Asignar el índice más cercano al paso
+        currentStepIndex = ZOOM_STEPS.findIndex(s => s >= currentScale);
+        if (currentStepIndex === -1) currentStepIndex = 5;
+
+        syncZoomUI();
+        e.preventDefault();
+      } else if (isDragging && e.touches.length === 1 && currentScale > 1.08) {
+        // ARRASTRE DE ZOOM CON 1 DEDO
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        panX = currentX - dragStartX;
+        panY = currentY - dragStartY;
+        totalMoved += 1;
+        renderTransform();
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    wrapper.addEventListener("touchend", (e) => {
+      if (isPinching && e.touches.length < 2) {
+        isPinching = false;
+        // Si pellizcó cerrando hasta casi normal, regresar a 1x limpio
+        if (currentScale <= 1.15) {
+          currentScale = 1.0;
+          currentStepIndex = 0;
+          syncZoomUI();
+        }
+      }
+      if (e.touches.length === 0) {
+        isDragging = false;
+      }
+    });
+
+    // ================================================================
+    // ARRASTRE CON RATÓN (PC)
+    // ================================================================
+    wrapper.addEventListener("mousedown", (e) => {
+      if (currentScale > 1.08) {
+        isDragging = true;
+        dragStartX = e.clientX - panX;
+        dragStartY = e.clientY - panY;
+      }
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (isDragging && currentScale > 1.08) {
+        panX = e.clientX - dragStartX;
+        panY = e.clientY - dragStartY;
+        renderTransform();
+      }
+    });
+
+    window.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
 
     // SONIDO
     let audioActivo = true;
@@ -687,7 +747,12 @@
         sliderFill.style.width = `${porcentaje}%`;
       }
 
-      if (zoomLevel > 0) setZoomLevel(0);
+      // Restablecer zoom al cambiar de hoja
+      if (currentScale > 1.0) {
+        currentScale = 1.0;
+        currentStepIndex = 0;
+        syncZoomUI();
+      }
     }
 
     actualizarVista(0);
