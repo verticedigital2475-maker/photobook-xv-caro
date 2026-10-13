@@ -4,21 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Muestra de Photobook · Caro Mis XV</title>
-  <!-- Vista previa enriquecida para WhatsApp y Redes Sociales (Open Graph) -->
+
+  <!-- VISTA PREVIA PARA WHATSAPP Y REDES SOCIALES (OPEN GRAPH) -->
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Foto y Video">
   <meta property="og:title" content="Muestra de Photobook · Caro Mis XV">
-  <meta property="og:description" content="Revisa la muestra digital interactiva del álbum fotográfico y déjanos tus comentarios. Foto y Video.">
-  <meta property="og:image" content="https://ok-xv-caro.vercel.app/01_portada.jpg">
+  <meta property="og:description" content="Revisa la muestra interactiva del álbum fotográfico y déjanos tus comentarios. Foto y Video.">
+  <meta property="og:image" content="https://photobook-xv-caro.vercel.app/01_portada.jpg">
+  <meta property="og:image:secure_url" content="https://photobook-xv-caro.vercel.app/01_portada.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="1200">
-  <meta property="og:url" content="https://ok-xv-caro.vercel.app">
+  <meta property="og:url" content="https://photobook-xv-caro.vercel.app/">
 
   <!-- Respaldo para Twitter / X -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Muestra de Photobook · Caro Mis XV">
-  <meta name="twitter:description" content="Revisa la muestra digital interactiva del álbum fotográfico. Foto y Video.">
-  <meta name="twitter:image" content="https://ok-xv-caro.vercel.app/01_portada.jpg">
+  <meta name="twitter:description" content="Revisa la muestra interactiva del álbum fotográfico. Foto y Video.">
+  <meta name="twitter:image" content="https://photobook-xv-caro.vercel.app/01_portada.jpg">
+
   <!-- Librería Page-Flip -->
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
   
@@ -29,12 +33,12 @@
       padding: 0;
     }
     
-    /* BLOQUEO TOTAL AL TAMAÑO VISIBLE REAL DEL CELULAR */
+    /* BLOQUEO TOTAL AL TAMAÑO VISIBLE REAL */
     html, body {
       width: 100%;
       height: 100%;
-      height: 100dvh; /* Altura dinámica real en navegadores móviles */
-      position: fixed; /* Evita que el navegador desplace la pantalla fuera de rango */
+      height: 100dvh;
+      position: fixed;
       top: 0;
       left: 0;
       right: 0;
@@ -50,7 +54,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* HEADER SUPERIOR (ALTURA EXACTA, SIEMPRE VISIBLE) */
+    /* HEADER SUPERIOR */
     header {
       width: 100%;
       height: 54px;
@@ -64,7 +68,7 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 50;
-      flex-shrink: 0; /* Prohibido que se reduzca o se corte */
+      flex-shrink: 0;
     }
     .header-info {
       display: flex;
@@ -167,7 +171,7 @@
     /* ÁREA PRINCIPAL */
     .book-wrapper {
       flex: 1;
-      min-height: 0; /* Permite que el flex se ajuste automáticamente sin desbordar */
+      min-height: 0;
       width: 100%;
       display: flex;
       align-items: center;
@@ -178,7 +182,6 @@
       touch-action: none;
     }
 
-    /* ENVOLTORIO ANIMADO PARA DESPLAZAMIENTO CENTRADO */
     #flipbook-container {
       display: flex;
       align-items: center;
@@ -212,7 +215,7 @@
       -webkit-user-drag: none;
     }
 
-    /* LOGOTIPO EN COMPUTADORA (LATERAL IZQUIERDO) */
+    /* LOGOTIPO LATERAL EN COMPUTADORA */
     #brand-badge {
       position: absolute;
       left: 18%;
@@ -257,7 +260,7 @@
     @media (max-width: 900px) and (orientation: portrait) {
       #brand-badge {
         left: 50%;
-        top: 25px; /* Separado limpiamente de la barra superior */
+        top: 25px;
         transform: translateX(-50%);
         gap: 6px;
         z-index: 15;
@@ -266,19 +269,16 @@
         transform: translateX(-50%);
       }
       #brand-badge img {
-        height: 65px !important; /* Proporción balanceada */
+        height: 65px !important;
         width: 65px !important;
       }
       .brand-text .sub {
         font-size: 0.78rem;
         letter-spacing: 1.5px;
       }
-      
-      /* Leve margen al contenedor del libro para dejar respirar el logo arriba */
       #flipbook-container {
         margin-top: 35px;
       }
-
       .nav-arrow {
         display: none;
       }
@@ -332,7 +332,7 @@
       fill: currentColor;
     }
 
-    /* FOOTER INFERIOR (COMPACTO Y SIEMPRE VISIBLE) */
+    /* FOOTER INFERIOR */
     footer {
       width: 100%;
       padding: 6px 14px 10px;
@@ -344,7 +344,7 @@
       align-items: center;
       gap: 6px;
       z-index: 50;
-      flex-shrink: 0; /* Prohibido que se reduzca o se desborde */
+      flex-shrink: 0;
     }
     .progress-bar-container {
       width: 100%;
@@ -479,7 +479,6 @@
       <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
     </button>
 
-    <!-- LOGOTIPO LIMPIO (SOLO "FOTO Y VIDEO") -->
     <a id="brand-badge" href="https://wa.me/524424249172" target="_blank" title="Contactar por WhatsApp">
       <img src="logo.png" alt="Logo" onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.src='logo.jpg';} else if(this.dataset.tried==='1'){this.dataset.tried='2'; this.src='logo.jpeg';}">
       <div class="brand-text">
@@ -487,7 +486,6 @@
       </div>
     </a>
 
-    <!-- ENVOLTORIO ANIMADO CON CENTRADO DE PORTADA -->
     <div id="flipbook-container">
       <div id="flipbook"></div>
     </div>
@@ -497,7 +495,7 @@
     </button>
   </div>
 
-  <!-- BARRA INFERIOR (COMPLETA Y ACCESIBLE) -->
+  <!-- BARRA INFERIOR -->
   <footer>
     <div class="progress-bar-container">
       <div class="page-counter" id="page-num">Portada</div>
@@ -513,7 +511,7 @@
       </button>
 
       <a class="action-btn btn-approval" href="https://wa.me/524424249172?text=Hola%20Cris%2C%20ya%20revise%20la%20muestra%20del%20photobook%20de%20Caro%20y%20tengo%20los%20siguientes%20comentarios%3A" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.7 4.19 1.9 5.86L2.6 22l4.3-1.25C8.42 21.49 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 22zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.7 4.19 1.9 5.86L2.6 22l4.3-1.25C8.42 21.49 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
         <span>Aprobar / Comentarios</span>
       </a>
     </div>
@@ -550,7 +548,6 @@
 
     let paginaActual = 0;
 
-    // Construcción de páginas
     imagenes.forEach((src, index) => {
       const pageDiv = document.createElement("div");
       pageDiv.className = "my-page";
@@ -564,7 +561,6 @@
       contenedor.appendChild(pageDiv);
     });
 
-    // Medidas dinámicas adaptadas al espacio real entre header y footer
     const anchoVentana = window.innerWidth;
     const altoVentana = window.innerHeight;
     const maxAnchoLibro = anchoVentana * (anchoVentana < 768 ? 0.94 : 0.85);
@@ -573,7 +569,6 @@
     let pageBaseSize = Math.floor(Math.min(maxAnchoLibro / 2, maxAltoLibro * 0.70));
     pageBaseSize = Math.max(140, Math.min(520, pageBaseSize));
 
-    // Inicializar St.PageFlip
     const pageFlip = new St.PageFlip(contenedor, {
       width: pageBaseSize,
       height: pageBaseSize,
@@ -592,9 +587,6 @@
 
     pageFlip.loadFromHTML(document.querySelectorAll(".my-page"));
 
-    // ================================================================
-    // MOTOR DE ZOOM Y DESPLAZAMIENTO CENTRADO DE PORTADA
-    // ================================================================
     const ZOOM_STEPS = [1.0, 1.6, 2.3, 3.1, 4.2, 5.5];
     let currentStepIndex = 0;
     let currentScale = 1.0;
@@ -698,7 +690,6 @@
       syncZoomUI();
     });
 
-    // PELLIZCO Y ARRASTRE
     function getDistance(t1, t2) {
       return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
     }
@@ -750,7 +741,6 @@
       }
     });
 
-    // RATÓN PC
     wrapper.addEventListener("mousedown", (e) => {
       if (currentScale > 1.08) {
         isDragging = true;
@@ -769,7 +759,6 @@
 
     window.addEventListener("mouseup", () => { isDragging = false; });
 
-    // SONIDO
     let audioActivo = true;
     let audioCtx = null;
 
@@ -803,7 +792,6 @@
       } catch (e) {}
     }
 
-    // NAVEGACIÓN Y ESTADO
     function actualizarVista(indice) {
       paginaActual = indice;
 
