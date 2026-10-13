@@ -30,7 +30,7 @@
     /* HEADER */
     header {
       width: 100%;
-      padding: 12px 24px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -45,13 +45,13 @@
       flex-direction: column;
     }
     .brand-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       letter-spacing: 0.5px;
       color: #f5f5f7;
     }
     .brand-subtitle {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: #9aa0a6;
     }
 
@@ -65,8 +65,8 @@
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #e4e7eb;
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -81,8 +81,8 @@
       border-color: #38bdf8;
     }
     .tool-btn svg {
-      width: 20px;
-      height: 20px;
+      width: 19px;
+      height: 19px;
       fill: currentColor;
     }
     .zoom-level-badge {
@@ -101,15 +101,15 @@
     /* GLOBO AZUL DE AVISO DE ZOOM */
     #zoom-hint {
       position: absolute;
-      top: 75px;
+      top: 65px;
       left: 50%;
       transform: translateX(-50%) translateY(-15px);
       background: rgba(15, 23, 42, 0.95);
       border: 1.5px solid #38bdf8;
       color: #ffffff;
-      padding: 10px 22px;
+      padding: 8px 20px;
       border-radius: 28px;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       font-weight: 600;
       z-index: 80;
       opacity: 0;
@@ -131,7 +131,7 @@
       background: rgba(255, 255, 255, 0.2);
       border-radius: 12px;
       padding: 2px 8px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       margin-left: 6px;
     }
 
@@ -148,16 +148,18 @@
       touch-action: none;
     }
 
+    /* ENVOLTORIO ANIMADO PARA DESPLAZAMIENTO ESTILO HEYZINE */
     #flipbook-container {
       display: flex;
       align-items: center;
       justify-content: center;
       transform-origin: center center;
-      transition: transform 0.05s linear;
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
       will-change: transform;
     }
     #flipbook-container.zoomed {
       cursor: grab;
+      transition: transform 0.05s linear;
     }
     #flipbook-container.zoomed:active {
       cursor: grabbing;
@@ -180,7 +182,7 @@
       -webkit-user-drag: none;
     }
 
-    /* LOGOTIPO VERTICAL (LOGO ARRIBA + TEXTO EN 2 LÍNEAS ABAJO) */
+    /* LOGOTIPO VERTICAL (LIMPIO, SIN "CORREGIDORA") */
     #brand-badge {
       position: absolute;
       left: 18%;
@@ -191,7 +193,7 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 14px;
+      gap: 12px;
       text-decoration: none;
       color: #ffffff;
       opacity: 1;
@@ -201,8 +203,8 @@
       transform: translate(-50%, -50%) scale(1.03);
     }
     #brand-badge img {
-      height: 140px !important;
-      width: 140px !important;
+      height: 130px !important;
+      width: 130px !important;
       object-fit: contain;
       filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.85));
     }
@@ -210,72 +212,78 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      line-height: 1.15;
+      line-height: 1.1;
       text-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
     }
     .brand-text .sub {
-      font-size: 1.1rem;
-      letter-spacing: 2px;
+      font-size: 1.2rem;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
-      color: #d1d5db;
-      font-weight: 500;
-    }
-    .brand-text .main {
-      font-size: 2.4rem;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: 0.5px;
+      color: #f1f5f9;
+      font-weight: 600;
     }
 
-    /* FORMATO VERTICAL PARA CELULAR Y TABLETA (ARRIBA DEL ÁLBUM, PROMINENTE) */
+    /* RESPONSIVE: CELULAR Y TABLETA EN VERTICAL */
     @media (max-width: 900px) and (orientation: portrait) {
+      header {
+        padding: 8px 14px;
+      }
+      .brand-title {
+        font-size: 0.88rem;
+      }
+      .brand-subtitle {
+        font-size: 0.7rem;
+      }
+      .tool-btn {
+        width: 34px;
+        height: 34px;
+      }
+      .tool-btn svg {
+        width: 17px;
+        height: 17px;
+      }
+
       #brand-badge {
         left: 50%;
-        top: 25px;
+        top: 20px;
         transform: translateX(-50%);
-        gap: 10px;
+        gap: 6px;
         z-index: 15;
       }
       #brand-badge:hover {
         transform: translateX(-50%);
       }
       #brand-badge img {
-        height: 100px !important;    /* Tamaño grande (2.5x mayor que antes) */
-        width: 100px !important;
+        height: 75px !important;    /* Tamaño equilibrado que deja visible el menú */
+        width: 75px !important;
       }
       .brand-text .sub {
         font-size: 0.85rem;
         letter-spacing: 1.5px;
-      }
-      .brand-text .main {
-        font-size: 1.6rem;
       }
       .nav-arrow {
         display: none;
       }
       #zoom-hint {
         width: 92%;
-        font-size: 0.82rem;
-        padding: 9px 14px;
-        top: 155px; /* Se sitúa por debajo del encabezado de la marca */
+        font-size: 0.8rem;
+        padding: 8px 12px;
+        top: 115px;
       }
     }
 
-    /* TABLETA GRANDE EN VERTICAL */
+    /* TABLETA EN VERTICAL */
     @media (min-width: 600px) and (max-width: 1024px) and (orientation: portrait) {
       #brand-badge img {
-        height: 125px !important;
-        width: 125px !important;
+        height: 100px !important;
+        width: 100px !important;
       }
       .brand-text .sub {
         font-size: 1rem;
       }
-      .brand-text .main {
-        font-size: 2rem;
-      }
     }
 
-    /* CELULAR EN HORIZONTAL (OCULTO PARA MAXIMIZAR EL LIENZO) */
+    /* HORIZONTAL EN CELULAR */
     @media (max-width: 900px) and (orientation: landscape) {
       #brand-badge {
         display: none !important;
@@ -285,7 +293,7 @@
       }
     }
 
-    /* FLECHAS */
+    /* FLECHAS FLOTANTES */
     .nav-arrow {
       position: absolute;
       top: 50%;
@@ -320,14 +328,14 @@
     /* FOOTER */
     footer {
       width: 100%;
-      padding: 10px 16px 14px;
+      padding: 8px 16px 12px;
       background: rgba(18, 19, 22, 0.7);
       backdrop-filter: blur(12px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       z-index: 50;
       flex-shrink: 0;
     }
@@ -372,9 +380,9 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 7px 16px;
+      padding: 6px 15px;
       border-radius: 20px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
@@ -392,14 +400,14 @@
       box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
     }
     .action-btn svg {
-      width: 15px;
-      height: 15px;
+      width: 14px;
+      height: 14px;
       fill: currentColor;
     }
 
     #toast {
       position: fixed;
-      top: 65px;
+      top: 60px;
       background: rgba(30, 41, 59, 0.95);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
@@ -463,15 +471,15 @@
       <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
     </button>
 
-    <!-- LOGOTIPO: FORMATO VERTICAL CON RESPALDO AUTOMÁTICO DE EXTENSIÓN -->
+    <!-- LOGOTIPO LIMPIO -->
     <a id="brand-badge" href="https://wa.me/524424249172" target="_blank" title="Contactar por WhatsApp">
       <img src="logo.png" alt="Logo" onerror="if(!this.dataset.tried){this.dataset.tried='1'; this.src='logo.jpg';} else if(this.dataset.tried==='1'){this.dataset.tried='2'; this.src='logo.jpeg';}">
       <div class="brand-text">
         <span class="sub">Foto y Video</span>
-        <span class="main">Corregidora</span>
       </div>
     </a>
 
+    <!-- ENVOLTORIO CON TRANSICIÓN DINÁMICA DE ENCUADRE -->
     <div id="flipbook-container">
       <div id="flipbook"></div>
     </div>
@@ -497,7 +505,7 @@
       </button>
 
       <a class="action-btn btn-approval" href="https://wa.me/524424249172?text=Hola%20Cris%2C%20ya%20revise%20la%20muestra%20del%20photobook%20de%20Caro%20y%20tengo%20los%20siguientes%20comentarios%3A" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.7 4.19 1.9 5.86L2.6 22l4.3-1.25C8.42 21.49 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 22zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.7 4.19 1.9 5.86L2.6 22l4.3-1.25C8.42 21.49 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z"/></svg>
         <span>Aprobar / Comentarios</span>
       </a>
     </div>
@@ -577,7 +585,7 @@
     pageFlip.loadFromHTML(document.querySelectorAll(".my-page"));
 
     // ================================================================
-    // MOTOR DE ZOOM AVANZADO
+    // MOTOR DE ZOOM Y DESPLAZAMIENTO CENTRADO DE PORTADA (ESTILO HEYZINE)
     // ================================================================
     const ZOOM_STEPS = [1.0, 1.6, 2.3, 3.1, 4.2, 5.5];
     let currentStepIndex = 0;
@@ -591,8 +599,25 @@
     let pinchStartDist = 0;
     let pinchStartScale = 1.0;
 
+    // Calcula el desplazamiento automático para centrar portada o contraportada
+    function getOffsetCentrado() {
+      if (currentScale > 1.08) return 0; // En zoom el usuario controla la posición
+      // La portada ocupa solo la mitad derecha del marco 3D, desplazamos -25% a la izquierda para centrarla
+      if (paginaActual === 0) {
+        return -(pageBaseSize / 2);
+      }
+      // La contraportada ocupa la mitad izquierda, desplazamos +25% a la derecha para centrarla
+      if (paginaActual >= imagenes.length - 1) {
+        return (pageBaseSize / 2);
+      }
+      // Pliegos dobles abiertos van perfectamente centrados en 0
+      return 0;
+    }
+
     function renderTransform() {
-      flipContainer.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${currentScale})`;
+      const offsetAuto = getOffsetCentrado();
+      const xFinal = panX + offsetAuto;
+      flipContainer.style.transform = `translate3d(${xFinal}px, ${panY}px, 0) scale(${currentScale})`;
     }
 
     function actualizarVisibilidadLogo() {
@@ -669,7 +694,7 @@
       syncZoomUI();
     });
 
-    // PELLIZCO Y ARRASTRE TÁCTIL
+    // PELLIZCO Y ARRASTRE
     function getDistance(t1, t2) {
       return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
     }
@@ -799,6 +824,7 @@
         syncZoomUI();
       } else {
         actualizarVisibilidadLogo();
+        renderTransform(); // Aplica la animación suave de centrado
       }
     }
 
@@ -861,8 +887,14 @@
       });
     }
 
-    window.addEventListener("resize", actualizarVisibilidadLogo);
-    window.addEventListener("orientationchange", () => setTimeout(actualizarVisibilidadLogo, 200));
+    window.addEventListener("resize", () => {
+      actualizarVisibilidadLogo();
+      renderTransform();
+    });
+    window.addEventListener("orientationchange", () => setTimeout(() => {
+      actualizarVisibilidadLogo();
+      renderTransform();
+    }, 200));
   </script>
 </body>
 </html>
